@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='utf-8'?>
+<addons><addon id="plugin.video.krastews" name="KrasteWS" version="0.0.1" provider-name="krastews">
+    <requires>
+        
+        <import addon="script.module.requests" version="2.18.4" />
+        <import addon="script.module.unidecode" version="0.4.16" />
+    </requires>
+    <extension point="xbmc.python.pluginsource" library="main.py">
+        <provides>video</provides>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <summary>KrasteWS - nesdílet ;)</summary>
+        <disclaimer lang="en_GB">The plugin does not provide any content, it is only a simulation of the browser of a publicly available web site. I am not responsible for the content provided by this site.</disclaimer>
+        <disclaimer lang="sk_SK">Plugin neposkytuje žiaden obsah, je to len simulácia prehliadača verejne dostupnej web stránky. Nie som zodpovedný za obsah, ktorý táto stránka poskytuje.</disclaimer>
+        <disclaimer lang="cs_CZ">Plugin neposkytuje žádný obsah, je to jen simulace prohlížeče veřejně dostupné web stránky. Nejsem zodpovědný za obsah, který tato stránka poskytuje.</disclaimer>
+        <platform>all</platform>
+        <license>open source</license>
+        <assets>
+            <icon>resources/icon.png</icon>
+        </assets>
+        <news>
+[B]0.1.2[/B]
+- vylepseni vyhledavani
+
+[B]0.1.1[/B]
+- zacatek
+        </news>
+    </extension>
+</addon><addon id="repository.krastewsrepo" name="KrasteWS repo" version="0.0.1" provider-name="KrasteWS">
+    <extension point="xbmc.addon.repository" name="Example Repository">
+        <dir>
+            <info compressed="false">https://raw.githubusercontent.com/Stekra88/krastews-repo/master/repo/zips/addons.xml</info>
+            <checksum>https://raw.githubusercontent.com/Stekra88/krastews-repo/master/repo/zips/addons.xml.md5</checksum>
+            <datadir zip="true">https://raw.githubusercontent.com/Stekra88/krastews-repo/master/repo/zips/</datadir>
+        </dir>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <summary>KrasteWS repo</summary>
+        <description>KrasteWS repo descriptioon</description>
+        <disclaimer />
+        <platform>all</platform>
+        <assets>
+            <icon>icon.png</icon>
+            <fanart>fanart.jpg</fanart>
+        </assets>
+    </extension>
+</addon><addon id="service.krastewsservice" name="KrasteWS Service Plugin" version="1.0.0" provider-name="KrasteWS">
+  <requires>
+    <import addon="xbmc.python" version="3.0.0" />
+  </requires>
+  <extension point="xbmc.service" library="service.py" />
+  <extension point="xbmc.addon.metadata">
+    <platform>all</platform>
+    <summary lang="cz" />
+  </extension>
+</addon></addons>
