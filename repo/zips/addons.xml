@@ -45,7 +45,7 @@
             <fanart>fanart.jpg</fanart>
         </assets>
     </extension>
-</addon><addon id="service.krastewsservice" name="KrasteWS Service Plugin" version="1.0.0" provider-name="KrasteWS">
+</addon><addon id="service.krastewsservice" name="KrasteWS Service Plugin" version="0.0.2" provider-name="KrasteWS">
   <requires>
     <import addon="xbmc.python" version="3.0.0" />
   </requires>
