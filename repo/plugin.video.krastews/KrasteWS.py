@@ -253,7 +253,7 @@ def removesearch(what):
             except Exception as e:
                 traceback.print_exc()
 
-def dosearch(token, what, category, sort, limit, offset, action):
+def dosearch_fast(token, what, category, sort, limit, offset, action):
 
 
 
@@ -265,12 +265,17 @@ def dosearch(token, what, category, sort, limit, offset, action):
 
         #json.dump(item, open(LOG_FILE, 'w'))
 
+
+        # seřadit do listů
+        elements_tree = xml.iter('file')
+
+
         if offset > 0: #prev page
             listitem = xbmcgui.ListItem(label=_addon.getLocalizedString(30206))
             listitem.setArt({'icon': 'DefaultAddonsSearch.png'})
             xbmcplugin.addDirectoryItem(_handle, get_url(action=action, what=what, category=category, sort=sort, limit=limit, offset=offset - limit if offset > limit else 0), listitem, True)
 
-        elements_tree = xml.iter('file')
+        
 
         scored_items = []
 
@@ -300,12 +305,106 @@ def dosearch(token, what, category, sort, limit, offset, action):
         except:
             total = 0
             
-        if offset + limit < total: #next page
-            listitem = xbmcgui.ListItem(label=_addon.getLocalizedString(30207))
+        if offset + limit < total: 
+            listitem = xbmcgui.ListItem(label=_addon.getLocalizedString(30207)) #next page
             listitem.setArt({'icon': 'DefaultAddonsSearch.png'})
             xbmcplugin.addDirectoryItem(_handle, get_url(action=action, what=what, category=category, sort=sort, limit=limit, offset=offset+limit), listitem, True)
     else:
         popinfo(_addon.getLocalizedString(30107), icon=xbmcgui.NOTIFICATION_WARNING)
+
+def dosearch_folders(token, what, category, sort, limit, offset, action):
+    all_file_infos = []
+    total = 999999  # dummy hodnota pro začátek
+    current_offset = 0
+
+    while current_offset < total:
+        response = api('search', {
+            'what': '' if what == NONE_WHAT else what,
+            'category': category,
+            'sort': sort,
+            'limit': limit,
+            'offset': current_offset,
+            'wst': token,
+            'maybe_removed': 'true'
+        })
+
+        xml = ET.fromstring(response.content)
+        if not is_ok(xml):
+            popinfo(_addon.getLocalizedString(30107), icon=xbmcgui.NOTIFICATION_WARNING)
+            return
+
+        files = list(xml.iter('file'))
+
+        for f in files:
+            item = todict(f)
+            ident = item['ident']
+            info = getinfo(ident, token)
+            name = info.find('name').text if info is not None else ""
+            all_file_infos.append({
+                'ident': ident,
+                'name': name,
+                'item': item
+            })
+
+        # zjisti celkový počet jen jednou
+        if current_offset == 0:
+            try:
+                total = int(xml.find('total').text)
+            except:
+                total = 0
+
+        current_offset += limit
+
+    # --- Dále stejné jako předtím ---
+    folders = []
+    ostatni = []
+    processed = set()
+
+    for i, file1 in enumerate(all_file_infos):
+        if file1['ident'] in processed:
+            continue
+
+        group = [file1]
+        processed.add(file1['ident'])
+
+        for j, file2 in enumerate(all_file_infos):
+            if file2['ident'] in processed:
+                continue
+            if get_string_similarity(file1['name'], file2['name']) > 70:
+                group.append(file2)
+                processed.add(file2['ident'])
+
+        if len(group) > 1:
+            folders.append(group)
+        else:
+            ostatni.append(file1)
+
+    folders.sort(key=lambda g: len(g), reverse=True)
+
+    for group in folders:
+        main_name = group[0]['name']
+        label = f"{main_name} ({len(group)} položek)"
+        listitem = xbmcgui.ListItem(label=label)
+        listitem.setArt({'icon': 'DefaultFolder.png'})
+        ident_list = ','.join([f['ident'] for f in group])
+        url = get_url(action='show_folder', idents=ident_list)
+        xbmcplugin.addDirectoryItem(_handle, url, listitem, True)
+
+    if ostatni:
+        label = f"Ostatní ({len(ostatni)} položek)"
+        listitem = xbmcgui.ListItem(label=label)
+        listitem.setArt({'icon': 'DefaultFolder.png'})
+        ident_list = ','.join([f['ident'] for f in ostatni])
+        url = get_url(action='show_folder', idents=ident_list)
+        xbmcplugin.addDirectoryItem(_handle, url, listitem, True)
+
+    xbmcplugin.endOfDirectory(_handle)
+
+def dosearch(token, what, category, sort, limit, offset, action):
+    if _addon.getSetting('folders') == 'true': 
+        dosearch_folders(token, what, category, sort, limit, offset, action)
+    else: 
+        dosearch_fast(token, what, category, sort, limit, offset, action)
 
 def search(params):
     xbmcplugin.setPluginCategory(_handle, _addon.getAddonInfo('name') + " \ " + _addon.getLocalizedString(30201))
@@ -347,6 +446,8 @@ def search(params):
         limit = int(params['limit']) if 'limit' in params else int(_addon.getSetting('slimit'))
         offset = int(params['offset']) if 'offset' in params else 0
         dosearch(token, what, category, sort, limit, offset, 'search')
+
+
     else:
         _addon.setSetting('slast',NONE_WHAT)
         history = loadsearch()
@@ -460,7 +561,7 @@ def fpsize(fps):
        return str(int(x))
     return str(x)
     
-def getinfo(ident,wst):
+def getinfo_old(ident,wst):
     response = api('file_info',{'ident':ident,'wst': wst})
     xml = ET.fromstring(response.content)
     ok = is_ok(xml)
@@ -472,6 +573,21 @@ def getinfo(ident,wst):
         return xml
     else:
         popinfo(_addon.getLocalizedString(30107), icon=xbmcgui.NOTIFICATION_WARNING)
+        return None
+
+def getinfo(ident, wst):
+    try:
+        response = api('file_info', {'ident': ident, 'wst': wst})
+        xml = ET.fromstring(response.content)
+        if not is_ok(xml):
+            response = api('file_info', {'ident': ident, 'wst': wst, 'maybe_removed': 'true'})
+            xml = ET.fromstring(response.content)
+        return xml if is_ok(xml) else None
+    except ET.ParseError as e:
+        print(f"[getinfo] XML ParseError for ident {ident}: {e}")
+        return None
+    except Exception as e:
+        print(f"[getinfo] Error fetching info for {ident}: {e}")
         return None
 
 def info(params):
@@ -672,6 +788,7 @@ def db(params):
 def menu():
     revalidate()
     xbmcplugin.setPluginCategory(_handle, _addon.getAddonInfo('name'))
+
     listitem = xbmcgui.ListItem(label=_addon.getLocalizedString(30201))
     listitem.setArt({'icon': 'DefaultAddonsSearch.png'})
     xbmcplugin.addDirectoryItem(_handle, get_url(action='search'), listitem, True)
@@ -695,6 +812,34 @@ def menu():
 
     xbmcplugin.endOfDirectory(_handle)
 
+def show_folder(params):
+    ident_string = params.get('idents')
+    if not ident_string:
+        popinfo("Složka neobsahuje žádné položky.", icon=xbmcgui.NOTIFICATION_WARNING)
+        return
+
+    idents = ident_string.split(',')
+    for ident in idents:
+        info = getinfo(ident, None)
+        if info is None:
+            continue
+
+        item = todict(info)
+        item['ident'] = ident  # 🔧 Doplnění chybějícího klíče
+        name = info.find('name').text if info.find('name') is not None else "Bez názvu"
+
+        commands = [(_addon.getLocalizedString(30214), 'Container.Update(' + get_url(action='search', toqueue=ident) + ')')]
+        listitem = tolistitem(item, commands)
+
+        xbmcplugin.addDirectoryItem(
+            _handle,
+            get_url(action='play', ident=ident, name=name),
+            listitem,
+            False
+        )
+
+    xbmcplugin.endOfDirectory(_handle)
+
 def router(paramstring):
     params = dict(parse_qsl(paramstring))
     if params:
@@ -714,6 +859,8 @@ def router(paramstring):
             download(params)
         elif params['action'] == 'db':
             db(params)
+        elif params['action'] == 'show_folder':
+            show_folder(params)
         else:
             menu()
     else:
@@ -849,3 +996,22 @@ BODY ZA PŘESNEJ NÁZEV
 
 
 """
+
+def get_string_similarity(string1, string2):
+
+
+    if len(string1) == 0 or len(string2) == 0:
+        return 0
+    
+    if len(string2) > len(string1):
+        string1, string2 = string2, string1
+
+    i = 0
+    for char in string1:
+        if i >= len(string2): break
+        if char == string2[i]:
+            i += 1
+        else:
+            break
+    percentage = (i*100) / len(string1)
+    return percentage

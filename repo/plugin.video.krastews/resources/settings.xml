@@ -8,6 +8,7 @@
         <setting type="lsep" label="30010" />
         <setting label="30011" id="scategory" type="select" lvalues="30012|30013|30014|30015|30016|30017|30018" default="1" visible="false"/>
         <setting label="30305" id="searchczech" type="bool" default="false" />
+        <setting label="30306" id="folders" type="bool" default="false" />
         <setting label="30020" id="ssort" type="select" lvalues="30021|30022|30023|30024|30025" default="2"/>
         <setting label="30028" id="slimit" type="number" default="25" />
         <setting label="30029" id="shistory" type="number" default="20"/>

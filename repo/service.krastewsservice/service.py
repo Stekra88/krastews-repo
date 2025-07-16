@@ -41,7 +41,10 @@ was_playing_my_video = False
 
 overlay = None
 
-while not monitor.abortRequested():
+# rozeznání streamu z webshare
+# 70 vteřin před koncem popup
+
+'''while not monitor.abortRequested():
     if player.isPlayingVideo():
         path = player.getPlayingFile()
         
@@ -72,6 +75,6 @@ while not monitor.abortRequested():
 
 
 if overlay:
-    overlay.close()
+    overlay.close()'''
 
 popinfo("Service addon ukončen")

@@ -216,3 +216,7 @@ msgstr "Neznámá chyba - "
 msgctxt "#30305"
 msgid "Search in czech language"
 msgstr "Dát přednost výsledkům v češtině"
+
+msgctxt "#30306"
+msgid "Search results in folders"
+msgstr "Rozdělit výsledky hledání do složek (Experimentální - pomalé)"
