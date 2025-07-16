@@ -41,6 +41,8 @@ was_playing_my_video = False
 
 overlay = None
 
+xbmc.executebuiltin('UpdateAddonRepos')
+
 # rozeznání streamu z webshare
 # 70 vteřin před koncem popup
 
