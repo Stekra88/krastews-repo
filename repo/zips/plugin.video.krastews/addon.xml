@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon id="plugin.video.krastews" name="KrasteWS" version="0.0.3" provider-name="krastews">
+    <requires>
+        <!--import addon="xbmc.python" version="2.19.0"/-->
+        <import addon="script.module.requests" version="2.18.4"/>
+        <import addon="script.module.unidecode" version="0.4.16"/>
+        <import addon="service.krastewsservice" version="0.0.3"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" library="main.py">
+        <provides>video</provides>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <summary>KrasteWS - nesdílet ;)</summary>
+        <disclaimer lang="en_GB">The plugin does not provide any content, it is only a simulation of the browser of a publicly available web site. I am not responsible for the content provided by this site.</disclaimer>
+        <disclaimer lang="sk_SK">Plugin neposkytuje žiaden obsah, je to len simulácia prehliadača verejne dostupnej web stránky. Nie som zodpovedný za obsah, ktorý táto stránka poskytuje.</disclaimer>
+        <disclaimer lang="cs_CZ">Plugin neposkytuje žádný obsah, je to jen simulace prohlížeče veřejně dostupné web stránky. Nejsem zodpovědný za obsah, který tato stránka poskytuje.</disclaimer>
+        <platform>all</platform>
+        <license>open source</license>
+        <assets>
+            <icon>resources/icon.png</icon>
+        </assets>
+        <news>
+
+[B]0.0.3[/B]
+- option na složky v nastaveni
+
+[B]0.0.2[/B]
+- vylepseni vyhledavani
+
+[B]0.0.1[/B]
+- zacatek
+
+
+        </news>
+    </extension>
+</addon>
