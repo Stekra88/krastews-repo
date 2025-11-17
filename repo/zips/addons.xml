@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addons><addon id="plugin.video.krastews" name="KrasteWS" version="0.0.3" provider-name="krastews">
+<addons><addon id="plugin.video.krastews" name="KrasteWS" version="0.0.4" provider-name="krastews">
     <requires>
         
         <import addon="script.module.requests" version="2.18.4" />
         <import addon="script.module.unidecode" version="0.4.16" />
-        <import addon="service.krastewsservice" version="0.0.3" />
+        <import addon="service.krastewsservice" version="0.0.4" />
     </requires>
     <extension point="xbmc.python.pluginsource" library="main.py">
         <provides>video</provides>
@@ -60,4 +60,21 @@
     <platform>all</platform>
     <summary lang="cz" />
   </extension>
+</addon><addon id="service.sc.hotfix" name="Stream Cinema Omega hotfix" version="1.0.0" provider-name="RomanHotfix">
+    <requires>
+        <import addon="xbmc.python" version="3.0.0" />
+    </requires>
+
+    
+    <extension point="xbmc.service" library="service.py" start="login" />
+
+    <extension point="xbmc.addon.metadata">
+        <summary>Hotfix pro Stream Cinema na Kodi 21 (Connection: close)</summary>
+        <description>
+            Jednorázově upraví soubor sc.py v doplňku Stream Cinema tak,
+            aby do HTTP hlaviček přidal Connection: close a opravilo se
+            padání po prvním přehrání.
+        </description>
+        <platform>all</platform>
+    </extension>
 </addon></addons>
