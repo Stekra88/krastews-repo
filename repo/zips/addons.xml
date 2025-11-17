@@ -60,7 +60,7 @@
     <platform>all</platform>
     <summary lang="cz" />
   </extension>
-</addon><addon id="service.sc.hotfix" name="Stream Cinema Omega hotfix" version="1.0.0" provider-name="RomanHotfix">
+</addon><addon id="service.sc.hotfix" name="Stream Cinema Omega hotfix" version="1.0.0" provider-name="SC Hotfix">
     <requires>
         <import addon="xbmc.python" version="3.0.0" />
     </requires>
